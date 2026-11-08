@@ -1,0 +1,40 @@
+{
+  "n": 731,
+  "mean_temp": 0.495384788508892,
+  "median_temp": 0.498333,
+  "std_temp": 0.18305099611148878,
+  "p_less_mean": 0.5,
+  "p_greater_median": 0.49357493052547485,
+  "sample_a_mean": 0.47635685,
+  "z_a": -0.46487334001345104,
+  "p_a": 0.321011081674056,
+  "decision_a": "não rejeitamos H0",
+  "sample_b_mean": 0.52278996,
+  "z_b": 0.7485665763440216,
+  "p_b": 0.227059241861588,
+  "decision_b": "não rejeitamos H0",
+  "cov_temp_count": 222.51470045305507,
+  "r_temp_count": 0.627494009033492,
+  "r2_simple": 0.3937487313729242,
+  "f_pvalue_simple": 2.8106223975895966e-81,
+  "prediction_simple": 5863.139118013449,
+  "eq_simple": "y = 1214.64 + 6640.71 × temperatura",
+  "r2_multiple": 0.4608950096446517,
+  "r2_adj_multiple": 0.4586703673185636,
+  "f_pvalue_multiple": 4.2551464401617436e-97,
+  "prediction_multiple": 6055.782692086072,
+  "eq_multiple": "y = (6625.53 × temperatura_normalizada) + (-3100.12 × umidade_normalizada) + (-4806.93 × vento_normalizado) + (4084.36)",
+  "accuracy": 0.7759562841530054,
+  "cm": [
+    [
+      77,
+      14
+    ],
+    [
+      27,
+      65
+    ]
+  ],
+  "logit_eq": "logit(p) = 0.024 + (1.481)·temperatura + (-0.720)·umidade + (-0.523)·vento",
+  "median_count": 4548.0
+}

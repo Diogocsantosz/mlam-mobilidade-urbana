@@ -1,0 +1,11 @@
+Integrantes:
+Diogo Chiaradia Santos — RM 570246
+Gustavo Torres de Oliveira — RM 572952
+Lucas Furquim Lima — RM 568690
+Rafael Laprega Gontijo Magalhaes — RM 561975
+
+Repositório GitHub:
+[INSERIR AQUI O LINK DO REPOSITÓRIO ANTES DA ENTREGA]
+
+Tema: Mobilidade urbana — demanda de bicicletas compartilhadas.
+Relatório e código: pasta mlam_humanizado.
