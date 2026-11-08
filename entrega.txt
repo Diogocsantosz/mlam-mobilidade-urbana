@@ -5,7 +5,7 @@ Lucas Furquim Lima — RM 568690
 Rafael Laprega Gontijo Magalhaes — RM 561975
 
 Repositório GitHub:
-[INSERIR AQUI O LINK DO REPOSITÓRIO ANTES DA ENTREGA]
+https://github.com/Diogocsantosz/mlam-mobilidade-urbana
 
 Tema: Mobilidade urbana — demanda de bicicletas compartilhadas.
 Relatório e código: pasta mlam_humanizado.
