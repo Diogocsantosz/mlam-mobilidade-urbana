@@ -35,6 +35,22 @@
       65
     ]
   ],
-  "logit_eq": "logit(p) = 0.024 + (1.481)·temperatura + (-0.720)·umidade + (-0.523)·vento",
+  "logit_eq": "logit(p) = 0.024 + (1.481)·z_temperatura + (-0.720)·z_umidade + (-0.523)·z_vento",
+  "exemplo_probabilidade": 0.8751435681342437,
+  "exemplo_classe": "alta demanda",
+  "padronizacao_treino": {
+    "temperatura_normalizada": {
+      "media": 0.5006336824817519,
+      "desvio_padrao": 0.18320788583678727
+    },
+    "umidade_normalizada": {
+      "media": 0.6301179598540148,
+      "desvio_padrao": 0.1421407240406667
+    },
+    "vento_normalizado": {
+      "media": 0.18657643357664233,
+      "desvio_padrao": 0.0749544344271759
+    }
+  },
   "median_count": 4548.0
 }

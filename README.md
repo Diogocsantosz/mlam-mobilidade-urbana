@@ -7,7 +7,6 @@ Esta entrega investiga uma pergunta simples e útil para uma operação de mobil
 - Diogo Chiaradia Santos — RM 570246
 - Gustavo Torres de Oliveira — RM 572952
 - Lucas Furquim Lima — RM 568690
-- Rafael Laprega Gontijo Magalhaes — RM 561975
 
 ## Estrutura
 
@@ -17,7 +16,7 @@ mlam_humanizado/
 ├── requirements.txt
 ├── data/day.csv                        # base usada na análise
 ├── data/Readme.txt                     # documentação original da base
-├── figures/                             # gráficos gerados pelo código
+├── figures/                             # gráficos, incluindo a matriz de dispersão
 ├── report/relatorio_estatistico_mobilidade.pdf
 └── report/resultados.json               # números calculados, não estimados
 ```
@@ -34,7 +33,7 @@ Esta não é uma base criada artificialmente. O arquivo `day.csv` foi mantido de
 2. Dois testes unilaterais para a média, com `n=20` e `α=6%`, e `n=25` e `α=9%`.
 3. Análise bivariada entre temperatura e total de aluguéis: dispersão, covariância, Pearson, reta, R², teste F e previsão.
 4. Regressão linear múltipla com temperatura, umidade e vento, incluindo matrizes, R², teste F e previsão com três explicativas.
-5. Regressão logística para classificar dias de alta demanda, usando o total acima ou igual à mediana como classe positiva.
+5. Regressão logística para classificar dias de alta demanda, usando o total acima ou igual à mediana como classe positiva, com um exemplo de classificação. A equação usa variáveis padronizadas pelos parâmetros do conjunto de treino.
 6. Relatório em PDF com interpretações em linguagem direta, sem afirmar causalidade onde os dados só mostram associação.
 
 ## Como reproduzir

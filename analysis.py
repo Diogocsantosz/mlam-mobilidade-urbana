@@ -55,6 +55,11 @@ def savefig(name):
 def fmt(x, digits=3):
     return f"{x:,.{digits}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
+def formatar_p(valor):
+    """Apresenta valores pequenos sem arredondá-los para zero."""
+    return "&lt; 0,00001" if valor < 0.00001 else "= " + fmt(valor, 5)
+
+
 def build_report(df, results):
     pdf = OUT / "relatorio_estatistico_mobilidade.pdf"
     styles = getSampleStyleSheet()
@@ -66,7 +71,7 @@ def build_report(df, results):
     story.append(Paragraph("Demanda de bicicletas e mobilidade urbana", styles["TitleCenter"]))
     P("<b>Relatório estatístico — MLAM</b><br/>Análise desenvolvida com uma base pública real do UCI Machine Learning Repository. A proposta é entender como condições climáticas se relacionam com o uso do sistema de bicicletas compartilhadas e se essas variáveis ajudam a identificar dias de alta demanda.")
     story.append(Spacer(1, 10))
-    P("<b>Integrantes:</b> Diogo Chiaradia Santos (RM 570246); Gustavo Torres de Oliveira (RM 572952); Lucas Furquim Lima (RM 568690); Rafael Laprega Gontijo Magalhaes (RM 561975).")
+    P("<b>Integrantes:</b> Diogo Chiaradia Santos (RM 570246); Gustavo Torres de Oliveira (RM 572952); Lucas Furquim Lima (RM 568690).")
     P("<b>Problema:</b> operadores de mobilidade precisam antecipar a procura para distribuir bicicletas e planejar a operação. A análise não afirma causalidade: ela mostra associações observadas na base.", "BodyText")
     P("<b>Base e tratamento.</b> Foram usados 731 registros diários, entre 2011 e 2012. A base contém temperatura, sensação térmica, umidade, vento e total de aluguéis. Não havia valores ausentes nas colunas utilizadas. As variáveis climáticas são normalizadas na própria base (0 a 1 aproximadamente), por isso as conclusões falam em aumento relativo, e não em graus Celsius.")
     P("Fonte: Fanaee-T e Gama, <i>Bike Sharing Dataset</i>, UCI Machine Learning Repository, DOI 10.24432/C5W894. Acesso em 08/11/2026. Arquivo original preservado em data/day.csv.")
@@ -76,29 +81,37 @@ def build_report(df, results):
     P("2. Testes de hipótese para a média", "Heading1")
     P(f"Usamos como referência a média de toda a população observada e amostras aleatórias reproduzíveis. No teste unilateral à esquerda (n=20, α=6%), média amostral = {fmt(results['sample_a_mean'])}, z = {fmt(results['z_a'])}, p = {fmt(results['p_a'], 4)}: {results['decision_a']}. No teste unilateral à direita (n=25, α=9%), média amostral = {fmt(results['sample_b_mean'])}, z = {fmt(results['z_b'])}, p = {fmt(results['p_b'], 4)}: {results['decision_b']}. Como os testes usam a média da própria base como referência, eles funcionam como uma verificação didática, não como evidência de causalidade.")
     P("3. Análise bivariada", "Heading1")
-    P(f"A relação entre temperatura e aluguéis totais foi positiva: covariância = {fmt(results['cov_temp_count'], 4)} e correlação de Pearson r = {fmt(results['r_temp_count'], 3)}. O modelo linear simples estimou {results['eq_simple']} e explicou R² = {fmt(results['r2_simple'], 3)} da variação observada. O teste F teve p = {fmt(results['f_pvalue_simple'], 5)}, indicando associação estatisticamente detectável neste conjunto. Para uma temperatura normalizada de 0,70, a previsão do modelo é de aproximadamente {fmt(results['prediction_simple'], 0)} aluguéis. Ainda assim, o gráfico mostra dispersão: temperatura sozinha não basta para planejar a operação.")
+    P(f"A relação entre temperatura e aluguéis totais foi positiva: covariância = {fmt(results['cov_temp_count'], 4)} e correlação de Pearson r = {fmt(results['r_temp_count'], 3)}. O modelo linear simples estimou {results['eq_simple']} e explicou R² = {fmt(results['r2_simple'], 3)} da variação observada. O teste F teve p {formatar_p(results['f_pvalue_simple'])}, indicando associação estatisticamente detectável neste conjunto. Para uma temperatura normalizada de 0,70, a previsão do modelo é de aproximadamente {fmt(results['prediction_simple'], 0)} aluguéis. Ainda assim, o gráfico mostra dispersão: temperatura sozinha não basta para planejar a operação.")
     story.append(Image(str(FIG / "01_dispersao_regressao_simples.png"), width=16*cm, height=9*cm))
     story.append(PageBreak())
     P("4. Regressão linear múltipla", "Heading1")
-    P(f"Incluímos temperatura, umidade e vento para explicar os aluguéis totais. A equação estimada foi: {results['eq_multiple']}. O modelo alcançou R² = {fmt(results['r2_multiple'], 3)} (R² ajustado = {fmt(results['r2_adj_multiple'], 3)}) e teste F com p = {fmt(results['f_pvalue_multiple'], 5)}. Para um cenário com temperatura=0,70, umidade=0,55 e vento=0,20, a previsão é de {fmt(results['prediction_multiple'], 0)} aluguéis. O R² indica que ainda há fatores importantes fora do modelo, como estação, feriados, dias úteis e tendência temporal.")
+    P(f"Incluímos temperatura, umidade e vento para explicar os aluguéis totais. A equação estimada foi: {results['eq_multiple']}. O modelo alcançou R² = {fmt(results['r2_multiple'], 3)} (R² ajustado = {fmt(results['r2_adj_multiple'], 3)}) e teste F com p {formatar_p(results['f_pvalue_multiple'])}. Para um cenário com temperatura=0,70, umidade=0,55 e vento=0,20, a previsão é de {fmt(results['prediction_multiple'], 0)} aluguéis. O R² indica que ainda há fatores importantes fora do modelo, como estação, feriados, dias úteis e tendência temporal.")
+    P("A matriz de dispersão permite comparar as variáveis duas a duas. A associação positiva entre temperatura e aluguéis aparece com dispersão; umidade e vento, isoladamente, apresentam relações lineares mais fracas com a demanda.")
+    story.append(Image(str(FIG / "04_dispersao_multivariada.png"), width=15*cm, height=15*cm))
     story.append(Image(str(FIG / "02_matriz_correlacao.png"), width=14*cm, height=10*cm))
     P("Matriz de covariância e correlação", "Heading2")
     cov = results["cov_table"]
     corr = results["corr_table"]
     data = [["Variável", *cov.columns]] + [[idx, *[fmt(v, 3) for v in cov.loc[idx]]] for idx in cov.index]
-    t = Table(data, repeatRows=1, colWidths=[4.2*cm]*4)
+    t = Table(data, repeatRows=1, colWidths=[3.4*cm]*5)
     t.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#245a73")), ("TEXTCOLOR", (0,0), (-1,0), colors.white), ("GRID", (0,0), (-1,-1), .25, colors.grey), ("FONTSIZE", (0,0), (-1,-1), 7)]))
     story.append(t)
     story.append(Spacer(1, 8))
     P("Matriz de correlação de Pearson", "Heading2")
     data_corr = [["Variável", *corr.columns]] + [[idx, *[fmt(v, 3) for v in corr.loc[idx]]] for idx in corr.index]
-    tc = Table(data_corr, repeatRows=1, colWidths=[4.2*cm]*4)
+    tc = Table(data_corr, repeatRows=1, colWidths=[3.4*cm]*5)
     tc.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#4b8b8a")), ("TEXTCOLOR", (0,0), (-1,0), colors.white), ("GRID", (0,0), (-1,-1), .25, colors.grey), ("FONTSIZE", (0,0), (-1,-1), 7)]))
     story.append(tc)
     P("Na matriz de correlação, temperatura apresenta a associação linear mais evidente com a demanda entre as variáveis climáticas usadas. Correlação não significa que o clima, sozinho, cause o aumento: calendário e comportamento também participam do resultado.", "Small")
     P("5. Regressão logística binária", "Heading1")
     P(f"Criamos a classe <b>alta demanda</b> quando os aluguéis totais ficaram acima ou iguais à mediana ({fmt(results['median_count'], 0)}). O modelo usa temperatura, umidade e vento. A acurácia no conjunto de teste foi {fmt(results['accuracy']*100, 2)}%. A matriz de confusão foi TN={results['cm'][0][0]}, FP={results['cm'][0][1]}, FN={results['cm'][1][0]} e TP={results['cm'][1][1]}. A classificação é útil como alerta operacional, mas não substitui uma previsão completa, pois o corte pela mediana é uma escolha analítica.")
     P("Equação em logito: " + results["logit_eq"])
+    P("Na equação, z representa o valor da variável padronizado pela média e pelo desvio-padrão do conjunto de treino: z = (valor - média do treino) / desvio-padrão do treino. A probabilidade é p = 1 / (1 + exp(-logito)); a classificação usa limiar de 0,50.")
+    escala = results["padronizacao_treino"]
+    P("Parâmetros de treino (média; desvio-padrão): " + "; ".join(
+        f"{nome}: {fmt(valores['media'], 4)}; {fmt(valores['desvio_padrao'], 4)}"
+        for nome, valores in escala.items()) + ".")
+    P(f"Para temperatura={fmt(0.70, 2)}, umidade={fmt(0.55, 2)} e vento={fmt(0.20, 2)}, o modelo estimou probabilidade de {fmt(results['exemplo_probabilidade']*100, 2)}% de alta demanda e classificou o cenário como {results['exemplo_classe']}. O exemplo ilustra o modelo, não garante o resultado real.")
     story.append(Image(str(FIG / "03_matriz_confusao.png"), width=9*cm, height=8*cm))
     P("6. Conclusão e limitações", "Heading1")
     P(f"Os dados sugerem que dias mais quentes tendem a ter mais aluguéis: r={fmt(results['r_temp_count'], 3)} e R² simples={fmt(results['r2_simple'], 3)}. Ao combinar temperatura, umidade e vento, o R² passa a {fmt(results['r2_multiple'], 3)}, mostrando ganho, mas também deixando claro que a maior parte da variação depende de outros fatores. A classificação de alta demanda atingiu {fmt(results['accuracy']*100, 2)}% de acurácia. O próximo passo seria incorporar feriados, dias úteis, estação, chuva e tendência temporal, além de validar o modelo em um período futuro. Os resultados são associações da base e não devem ser tratados como causalidade ou garantia de demanda.")
@@ -128,6 +141,13 @@ def main():
     cols = ["temperatura_normalizada", "umidade_normalizada", "vento_normalizado", "alugueis_totais"]
     results["cov_table"] = df[cols].cov(); results["corr_table"] = df[cols].corr()
     plt.figure(figsize=(8, 6)); sns.heatmap(results["corr_table"], annot=True, fmt=".2f", cmap="vlag", center=0); plt.title("Correlação de Pearson"); savefig("02_matriz_correlacao.png")
+    labels = {"temperatura_normalizada": "temperatura", "umidade_normalizada": "umidade",
+              "vento_normalizado": "vento", "alugueis_totais": "aluguéis"}
+    grafico = sns.pairplot(df[cols].rename(columns=labels), plot_kws={"alpha": .35, "s": 9},
+                           diag_kind="hist", height=1.8)
+    grafico.figure.suptitle("Dispersão entre variáveis", y=1.02)
+    grafico.figure.savefig(FIG / "04_dispersao_multivariada.png", dpi=160, bbox_inches="tight")
+    plt.close(grafico.figure)
     features = ["temperatura_normalizada", "umidade_normalizada", "vento_normalizado"]
     Xm = sm.add_constant(df[features]); multiple = sm.OLS(count, Xm).fit()
     results.update(r2_multiple=multiple.rsquared, r2_adj_multiple=multiple.rsquared_adj, f_pvalue_multiple=float(multiple.f_pvalue), prediction_multiple=float(multiple.predict([1, .70, .55, .20])[0]))
@@ -137,7 +157,13 @@ def main():
     clf = Pipeline([("scale", StandardScaler()), ("model", LogisticRegression(random_state=RANDOM_STATE))]); clf.fit(Xtr, ytr); pred = clf.predict(Xte)
     results["accuracy"] = accuracy_score(yte, pred); results["cm"] = confusion_matrix(yte, pred).tolist()
     coef = clf.named_steps["model"].coef_[0]; inter = clf.named_steps["model"].intercept_[0]
-    results["logit_eq"] = f"logit(p) = {inter:.3f} + ({coef[0]:.3f})·temperatura + ({coef[1]:.3f})·umidade + ({coef[2]:.3f})·vento"
+    results["logit_eq"] = f"logit(p) = {inter:.3f} + ({coef[0]:.3f})·z_temperatura + ({coef[1]:.3f})·z_umidade + ({coef[2]:.3f})·z_vento"
+    exemplo = pd.DataFrame([[.70, .55, .20]], columns=features)
+    results["exemplo_probabilidade"] = float(clf.predict_proba(exemplo)[0, 1])
+    results["exemplo_classe"] = "alta demanda" if int(clf.predict(exemplo)[0]) else "demanda abaixo da mediana"
+    scaler = clf.named_steps["scale"]
+    results["padronizacao_treino"] = {nome: {"media": float(media), "desvio_padrao": float(desvio)}
+                                      for nome, media, desvio in zip(features, scaler.mean_, scaler.scale_)}
     plt.figure(figsize=(5, 4)); sns.heatmap(results["cm"], annot=True, fmt="d", cmap="Blues", cbar=False); plt.title("Matriz de confusão"); plt.xlabel("Predito"); plt.ylabel("Real"); savefig("03_matriz_confusao.png")
     results["median_count"] = count.median()
     serializable = {k: (v.to_dict() if isinstance(v, pd.DataFrame) else v) for k,v in results.items() if k not in ["cov_table", "corr_table"]}
